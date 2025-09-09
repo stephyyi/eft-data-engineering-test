@@ -1,45 +1,149 @@
-# EFT Data Engineering Test  
+# EFT Data Engineering Test
 
-This repository contains the solution to the EFT Corporation **Data Engineering Pre-Test Assignment**.  
-It implements a complete **daily ETL pipeline** for ingesting, transforming, and aggregating banking transaction data, with outputs designed for both **reporting** (MySQL) and **dashboarding** (Power BI).  
+This repository contains the solution to the EFT Corporation Data Engineering Pre-Test Assignment. It implements a complete daily ETL pipeline for ingesting, transforming, and aggregating banking transaction data, with outputs designed for both reporting (MySQL) and dashboarding (Power BI).
 
----
+## Features
 
-## ✨ Features
-- **Apache Airflow DAG**: Orchestrates a daily pipeline to ingest raw transactions (CSV / S3), transform them in Python, and load results into MySQL.  
-- **Python Transformation Module**: Cleans nulls, validates schema, and aggregates transaction totals per bank per day.  
-- **MySQL Integration**: Stores daily aggregates with idempotent upserts keyed by `(txn_date, bank_id)`.  
-- **SQL Analytics**: Queries for top banks by transaction volume and average transaction value per customer.  
-- **Mock Data**: 40+ days of realistic transactional data (with anomalies) for demo and testing.  
-- **Power BI Dashboard**: Visualizes daily totals, top 5 banks, monthly trends, and anomalies with DAX measures.  
+- **Apache Airflow DAG**: Orchestrates a daily pipeline to ingest raw transactions (CSV/S3), transform them in Python, and load results into MySQL
+- **Python Transformation Module**: Cleans nulls, validates schema, and aggregates transaction totals per bank per day
+- **MySQL Integration**: Stores daily aggregates with idempotent upserts keyed by (txn_date, bank_id)
+- **SQL Analytics**: Queries for top banks by transaction volume and average transaction value per customer
+- **Mock Data**: 46 days of realistic transactional data with anomalies for testing
+- **Power BI Dashboard**: Visualizes daily totals, top 5 banks, monthly trends, and anomalies
 
----
+## Repository Structure
 
-## 🗂️ Repository Structure
-airflow/dags/transactions_pipeline_dag.py # Airflow DAG definition
-src/transform.py # Python transformation logic
-sql/queries.sql # SQL queries for analytics
-data/sample_transactions.csv # Mock transaction dataset
-powerbi/ # Power BI file / notes
-README.md # Setup guide & documentation
+```
+airflow/dags/transactions_pipeline_dag.py  # Airflow DAG definition
+src/transform.py                           # Python transformation logic
+sql/queries.sql                           # SQL queries for analytics
+data/sample_transactions.csv              # Mock transaction dataset
+powerbi_exports/                          # screenshots of Powerbi visualization
+requirements.txt                          # Python dependencies
+setup.sh                                  # Setup script
+test_setup.py                            # Installation verification
+```
 
+## Technology Stack
 
----
+- **Apache Airflow** - workflow orchestration
+- **Python** (pandas, numpy, sqlalchemy) - data cleaning and transformation
+- **MySQL** - storage and reporting
+- **Power BI** - visualization and anomaly detection
 
-## 🚀 Tech Stack
-- **Apache Airflow** (workflow orchestration)  
-- **Python (pandas, numpy, sqlalchemy)** (data cleaning & transformation)  
-- **MySQL** (storage & reporting)  
-- **Power BI** (visualization & anomaly detection)  
+## Setup Instructions
 
----
+### Prerequisites
+- Python 3.11+
+- MySQL 8.x or compatible
+- Apache Airflow 2.7+
 
-## ⚙️ Setup Instructions  
-
-### 1. Prerequisites
-- Python 3.9+  
-- MySQL 8.x (or compatible)  
-- Airflow 2.7+  
-- Install dependencies:  
+### Installation
 ```bash
-pip install pandas numpy sqlalchemy pymysql apache-airflow
+# Run automated setup
+chmod +x setup.sh
+./setup.sh
+
+# Or manual installation
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### Database Setup
+```bash
+# Create MySQL database
+mysql -u root -e "CREATE DATABASE IF NOT EXISTS analytics;"
+
+# Verify installation
+python test_setup.py
+```
+
+## Usage
+
+### Running the ETL Pipeline
+```bash
+# Activate environment
+source venv/bin/activate
+
+# Transform data directly
+python src/transform.py --in data/sample_transactions.csv --out output.csv
+
+# Run complete pipeline simulation
+python -c "
+from airflow.dags.transactions_pipeline_dag import extract_and_transform, load_to_mysql
+# Pipeline execution logic here
+"
+```
+
+### SQL Analytics
+```sql
+-- Top 5 banks by volume (last 7 days)
+SELECT bank_id, SUM(total_volume) AS volume_7d
+FROM bank_transactions_daily
+WHERE txn_date >= CURDATE() - INTERVAL 7 DAY
+GROUP BY bank_id
+ORDER BY volume_7d DESC
+LIMIT 5;
+```
+
+
+#### Power BI Dashboard Screenshots
+
+**Daily Transaction Volume Overview**
+
+![Daily Transaction Volume](powerbi_exports/Screenshot%202025-09-09%20at%2012.48.30.png)
+
+**Top 5 Banks Performance**
+
+![Top Banks Performance](powerbi_exports/Screenshot%202025-09-09%20at%2013.18.59.png)
+
+**Monthly Trends Analysis**
+
+![Monthly Trends](powerbi_exports/Screenshot%202025-09-09%20at%2013.19.12.png)
+
+**Anomaly Detection Dashboard**
+
+![Anomaly Detection](powerbi_exports/Screenshot%202025-09-09%20at%2013.19.23.png)
+
+## Data Schema
+
+### Input Data (sample_transactions.csv)
+- `transaction_id` - Unique transaction identifier
+- `bank_id` - Bank identifier (BANK_1 to BANK_5)
+- `customer_id` - Customer identifier
+- `amount` - Transaction amount
+- `timestamp` - Transaction timestamp
+
+### Output Data (bank_transactions_daily)
+- `txn_date` - Transaction date
+- `bank_id` - Bank identifier
+- `total_volume` - Number of transactions
+- `total_value` - Sum of transaction amounts
+- `avg_value` - Average transaction amount
+- `median_value` - Median transaction amount
+
+## Architecture
+
+1. **Extract**: Read CSV transaction data
+2. **Transform**: Clean, validate, and aggregate by bank and date
+3. **Load**: Store aggregated data in MySQL
+4. **Analyze**: Run SQL queries for insights
+5. **Visualize**: Create Power BI dashboards
+
+## Testing
+
+Run the test suite to verify installation and functionality:
+```bash
+python test_setup.py
+```
+
+## Requirements Met
+
+- Daily ETL pipeline with Airflow
+- Python data transformation with pandas
+- MySQL database integration
+- SQL analytics queries
+- Power BI dashboard data preparation
+- Anomaly detection capabilities
+- Complete documentation and setup automation

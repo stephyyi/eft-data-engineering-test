@@ -1,12 +1,14 @@
 """
-Transformation logic for EFT transactions pipeline
+transformation logic for EFT transactions pipeline
 """
+
 
 import pandas as pd
 import numpy as np
 
+
 def validate_and_clean(df: pd.DataFrame) -> pd.DataFrame:
-    """Cleans nulls, validates types, filters bad data."""
+    """cleans nulls, validates types, filters bad data."""
     # Drop completely null rows
     df = df.dropna(how="all")
 
@@ -14,6 +16,7 @@ def validate_and_clean(df: pd.DataFrame) -> pd.DataFrame:
     expected_types = {
         "transaction_id": str,
         "bank_id": str,
+
         "customer_id": str,
         "amount": float,
         "timestamp": "datetime64[ns]"
@@ -39,7 +42,7 @@ def validate_and_clean(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def aggregate_daily_by_bank(df: pd.DataFrame) -> pd.DataFrame:
-    """Aggregates daily totals by bank_id."""
+    """aggregates daily totals by bank_id."""
     df["txn_date"] = df["timestamp"].dt.date
 
     agg = (

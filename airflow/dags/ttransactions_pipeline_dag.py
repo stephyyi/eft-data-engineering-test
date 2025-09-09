@@ -39,13 +39,13 @@ with DAG(
     def extract_and_transform(**context):
         df = pd.read_csv(input_csv, parse_dates=["timestamp"])
 
-        # Clean & validate
+        # clean and validate
         df = validate_and_clean(df)
 
-        # Aggregate
+        # aggregate
         agg_df = aggregate_daily_by_bank(df)
 
-        # Save intermediate file
+        # save intermediate file
         out_path = f"/tmp/daily_agg_{context['ds']}.csv"
         agg_df.to_csv(out_path, index=False)
         return out_path
@@ -56,7 +56,7 @@ with DAG(
         mysql_uri = os.getenv("MYSQL_URI", "mysql+pymysql://root:root@mysql:3306/analytics")
         engine = create_engine(mysql_uri)
 
-        # Pull transformed CSV path from XCom
+        # pull transformed CSV path from XCom
         out_path = ti.xcom_pull(task_ids="transform_task")
         agg_df = pd.read_csv(out_path)
 

@@ -4,7 +4,6 @@ transformation logic for EFT transactions pipeline
 
 
 import pandas as pd
-import numpy as np
 
 
 def validate_and_clean(df: pd.DataFrame) -> pd.DataFrame:

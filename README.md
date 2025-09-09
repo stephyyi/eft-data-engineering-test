@@ -92,6 +92,8 @@ LIMIT 5;
 - For the powerbi dashboard I couldn't download the file itself as I was using the free PowerBi service on my Mac which doen't have that functionality.
 However, see below the screenshots form my work.
 
+Link to dashboard : https://app.powerbi.com/groups/me/dashboards/9d165387-7089-4902-97a3-8428b4916366?ctid=5e4540c5-6c3d-470b-87c8-e7e62f1d3086&pbi_source=linkShare
+
 **Daily Transaction Volume Overview. && Top 5 Banks Performance**
 
 ![Top Banks Performance](powerbi_exports/Screenshot%202025-09-09%20at%2013.18.59.png)
